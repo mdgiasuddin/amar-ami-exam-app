@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  postgresql_db:
+    image: "postgres"
+    restart: always
+    ports:
+      - "5436:5432"
+    volumes:
+      - amar_ami_exam_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: amar_ami_db
+      POSTGRES_USER: user_giash
+      POSTGRES_PASSWORD: nE5kMc7JCGNqwDQM
+volumes:
+  amar_ami_exam_data:
