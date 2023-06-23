@@ -15,5 +15,5 @@ public class AppConstants {
     public static final int TEN_PRIZE = 15;
     public static final int EIGHT_PRIZE = 10;
     public static final int FIVE_PRIZE = 13;
-    public static final String EXAM_DATE = "Exam Date: Tuesday, 27 June, 9.00 am";
+    public static final String EXAM_DATE = "Exam Date: Monday, 26 June, 9.00 am";
 }

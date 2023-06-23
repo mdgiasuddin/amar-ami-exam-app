@@ -21,15 +21,15 @@ public class StudentController {
 
     private final StudentService studentService;
 
-    @PostMapping("/excel")
+    /*@PostMapping("/excel")
     public String saveStudent(@RequestParam("file") final MultipartFile multipartFile) throws IOException {
         return studentService.saveStudent(multipartFile);
-    }
+    }*/
 
-    @PutMapping("/verification-no")
+    /*@PutMapping("/verification-no")
     public String addVerificationNo() {
         return studentService.addVerificationNo();
-    }
+    }*/
 
     @GetMapping("/admit-card/{classId}")
     public String generateAdmitCard(@PathVariable("classId") String classId) throws Exception {

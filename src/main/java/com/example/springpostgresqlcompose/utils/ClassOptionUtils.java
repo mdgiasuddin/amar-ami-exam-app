@@ -10,10 +10,10 @@ public class ClassOptionUtils {
 
     public Map<String, String> getOptionsOfClass(String classId) {
         Map<String, String> map = new HashMap<>();
-        String admitCards = classId + "Admit.pdf";
-        String watermarkAdmitCards = classId + "WM-Admit.pdf";
-        String attendanceSheet = classId + "-Attendance.pdf";
-        String resultSheet = classId + "-Result.pdf";
+        String admitCards = classId + "_TMP-Admit.pdf";
+        String watermarkAdmitCards = classId + "_Admit.pdf";
+        String attendanceSheet = classId + "_Attendance.pdf";
+        String resultSheet = classId + "_Result.pdf";
 
         int startingRollNo = 0;
         int startingRegNo = 0;

@@ -61,7 +61,8 @@ public class PdfGenerationService {
         final float marginLeftRight = 35;
         Document document = new Document(pageSize, marginLeftRight, marginLeftRight, marginTopBottom, marginTopBottom);
 
-        BaseFont scriptMTBold = BaseFont.createFont(AppConstants.SCRIPT_MT_BOLD, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont scriptMTBold =
+            BaseFont.createFont(AppConstants.SCRIPT_MT_BOLD, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         BaseFont oldEnglish = BaseFont.createFont(AppConstants.OLD_ENGLISH, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         BaseFont winding = BaseFont.createFont(AppConstants.WINDING, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
@@ -89,7 +90,7 @@ public class PdfGenerationService {
 
             PdfPTable imageTable = new PdfPTable(2);
             imageTable.setWidthPercentage(100);
-            imageTable.setWidths(new int[]{1, 5});
+            imageTable.setWidths(new int[] {1, 5});
 
             PdfPCell imageCell = new PdfPCell();
             imageCell.addElement(logoImage);
@@ -120,7 +121,7 @@ public class PdfGenerationService {
 
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(95);
-            table.setWidths(new int[]{8, 5});
+            table.setWidths(new int[] {8, 5});
 
             PdfPCell cell;
 
@@ -141,7 +142,7 @@ public class PdfGenerationService {
             table.addCell(cell);
 
             String classId = student.getClassId() + (student.getClassId().equals(student.getClassIdActual()) ? ""
-                    : " (" + student.getClassIdActual() + ")");
+                : " (" + student.getClassIdActual() + ")");
             cell = new PdfPCell(new Phrase("Class: " + classId, scriptMTBold11));
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
@@ -165,7 +166,7 @@ public class PdfGenerationService {
             signImage.setAlignment(Element.ALIGN_LEFT);
 
             PdfPTable table2 = new PdfPTable(3);
-            table2.setWidths(new int[]{24, 2, 3});
+            table2.setWidths(new int[] {24, 2, 3});
             table2.setWidthPercentage(100);
 
             cell = new PdfPCell(new Phrase("", scriptMTBold11));
@@ -182,7 +183,7 @@ public class PdfGenerationService {
             table2.addCell(cell);
 
             PdfPTable table3 = new PdfPTable(2);
-            table3.setWidths(new int[]{8, 3});
+            table3.setWidths(new int[] {8, 3});
             table3.setWidthPercentage(100);
             table3.setSpacingAfter(15);
 
@@ -196,7 +197,9 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
 //            table3.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Generated at: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM, yyyy hh:mm:ss a")), fontNormal));
+            cell = new PdfPCell(new Phrase(
+                "Generated at: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM, yyyy hh:mm:ss a")),
+                fontNormal));
             cell.setBorder(Rectangle.NO_BORDER);
             table3.addCell(cell);
 
@@ -214,7 +217,7 @@ public class PdfGenerationService {
 
             PdfPTable directions = new PdfPTable(2);
             directions.setWidthPercentage(100);
-            directions.setWidths(new int[]{3, 97});
+            directions.setWidths(new int[] {3, 97});
 
             char checked = '\u0076';
             PdfPCell markCell = new PdfPCell(new Phrase(String.valueOf(checked), windingFont));
@@ -228,25 +231,32 @@ public class PdfGenerationService {
 
             directions.addCell(markCell);
 
-            cell = new PdfPCell(new Phrase("Examinee must appear in the exam hall & take his/her seat at least 20 minutes before the exam start.", fontItalic));
+            cell = new PdfPCell(new Phrase(
+                "Examinee must appear in the exam hall & take his/her seat at least 20 minutes before the exam start.",
+                fontItalic));
             cell.setBorder(Rectangle.NO_BORDER);
             directions.addCell(cell);
 
             directions.addCell(markCell);
 
-            cell = new PdfPCell(new Phrase("Examinee must carry his/her own writing materials like pen, pencil, geometry instruments & calculator. But he/she cannot keep anything with him/her except these materials.", fontItalic));
+            cell = new PdfPCell(new Phrase(
+                "Examinee must carry his/her own writing materials like pen, pencil, geometry instruments & calculator. But he/she cannot keep anything with him/her except these materials.",
+                fontItalic));
             cell.setBorder(Rectangle.NO_BORDER);
             directions.addCell(cell);
 
             directions.addCell(markCell);
 
-            cell = new PdfPCell(new Phrase("In case of violating one or more rules by any examinee during the exam time, that examinee's exam will be canceled and legal actions against that examinee will be taken.", fontItalic));
+            cell = new PdfPCell(new Phrase(
+                "In case of violating one or more rules by any examinee during the exam time, that examinee's exam will be canceled and legal actions against that examinee will be taken.",
+                fontItalic));
             cell.setBorder(Rectangle.NO_BORDER);
             directions.addCell(cell);
 
             // QR Code in top right corner.
-            BarcodeQRCode qrCode = new BarcodeQRCode("Amar Ami-" + LocalDate.now().getYear() + "<<" + student.getName() + "<<"
-                    + student.getRollNo() + "<<" + student.getRegNo(), 1, 1, null);
+            BarcodeQRCode qrCode = new BarcodeQRCode(
+                LocalDate.now().getYear() + ">>" + student.getRollNo() + ">>" + student.getName() + "<<"
+                    + "<<" + student.getRegNo() + "<<" + student.getVerificationNo(), 1, 1, null);
             Image qrImage = qrCode.getImage();
             Image mask = qrCode.getImage();
             mask.makeMask();
@@ -268,7 +278,8 @@ public class PdfGenerationService {
         document.close();
     }
 
-    public void generateBlankAdmitCard(List<Student> studentList, String filename) throws IOException, DocumentException {
+    public void generateBlankAdmitCard(List<Student> studentList, String filename)
+        throws IOException, DocumentException {
 
         Rectangle pageSize = new Rectangle(297, 213);
         final float marginTopBottom = 15;
@@ -294,7 +305,7 @@ public class PdfGenerationService {
 
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(100);
-            table.setWidths(new int[]{8, 6});
+            table.setWidths(new int[] {8, 6});
 
             PdfPCell cell;
 
@@ -327,7 +338,7 @@ public class PdfGenerationService {
             signImage.setAlignment(Element.ALIGN_LEFT);
 
             PdfPTable table2 = new PdfPTable(3);
-            table2.setWidths(new int[]{17, 2, 3});
+            table2.setWidths(new int[] {17, 2, 3});
             table2.setWidthPercentage(100);
 
             cell = new PdfPCell(new Phrase("", font));
@@ -344,7 +355,7 @@ public class PdfGenerationService {
             table2.addCell(cell);
 
             PdfPTable table3 = new PdfPTable(2);
-            table3.setWidths(new int[]{8, 5});
+            table3.setWidths(new int[] {8, 5});
             table3.setWidthPercentage(100);
             table3.setSpacingAfter(15);
 
@@ -384,7 +395,7 @@ public class PdfGenerationService {
 
         PdfPTable table = new PdfPTable(3);
         table.setWidthPercentage(100);
-        table.setWidths(new int[]{1, 1, 1});
+        table.setWidths(new int[] {1, 1, 1});
 
         for (Student student : studentList) {
             Paragraph paragraph = new Paragraph("Class: " + student.getClassId() + "\n", font);
@@ -465,11 +476,12 @@ public class PdfGenerationService {
 
             PdfPTable table = new PdfPTable(3);
             table.setWidthPercentage(100);
-            table.setWidths(new int[]{1, 2, 10});
+            table.setWidths(new int[] {1, 2, 10});
             table.setSpacingAfter(15);
             table.setHorizontalAlignment(Element.ALIGN_LEFT);
 
-            PdfPCell cell = createMergedCell(entry.getKey(), 1, entry.getValue().size() + centreData.size() * 2, boldFont);
+            PdfPCell cell =
+                createMergedCell(entry.getKey(), 1, entry.getValue().size() + centreData.size() * 2, boldFont);
             cell.setRotation(90);
             table.addCell(cell);
             for (Map.Entry<String, List<AttendanceSheetData>> centreEntry : centreData.entrySet()) {
@@ -482,7 +494,7 @@ public class PdfGenerationService {
                 for (AttendanceSheetData sheetData : centreEntry.getValue()) {
                     table.addCell(new Phrase(sheetData.getRoomNo(), largeFont));
                     table.addCell(new Phrase(sheetData.getStartRollNo() + " - " + sheetData.getEndRollNo()
-                            + " => " + (sheetData.getEndRollNo() - sheetData.getStartRollNo() + 1), largeFont));
+                        + " => " + (sheetData.getEndRollNo() - sheetData.getStartRollNo() + 1), largeFont));
                 }
             }
 
@@ -512,15 +524,18 @@ public class PdfGenerationService {
             Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2022\n", font);
             headingParagraph.add(new Chunk("Room No: " + data.getRoomNo() + "\n", font));
             headingParagraph.add(new Chunk(data.getCentre() + "\n", font));
-            headingParagraph.add(new Chunk("Class: " + data.getClassId() + " (Roll: " + data.getStartRollNo() + " - " + data.getEndRollNo() + ")\n", font));
+            headingParagraph.add(new Chunk(
+                "Class: " + data.getClassId() + " (Roll: " + data.getStartRollNo() + " - " + data.getEndRollNo() +
+                    ")\n", font));
             headingParagraph.setAlignment(Element.ALIGN_CENTER);
             headingParagraph.setSpacingAfter(20);
 
-            List<Student> studentList = studentRepository.findByRollNoIsBetweenOrderByRollNoAsc(data.getStartRollNo(), data.getEndRollNo());
+            List<Student> studentList =
+                studentRepository.findByRollNoIsBetweenOrderByRollNoAsc(data.getStartRollNo(), data.getEndRollNo());
 
             PdfPTable table = new PdfPTable(6);
             table.setWidthPercentage(100);
-            table.setWidths(new int[]{2, 15, 5, 5, 5, 10});
+            table.setWidths(new int[] {2, 15, 5, 5, 5, 10});
 
             table.addCell(new Phrase("Sl.", boldFont));
             table.addCell(new Phrase("Name", boldFont));
@@ -554,7 +569,8 @@ public class PdfGenerationService {
         document.close();
     }
 
-    public void generateFinalResult(List<Student> tenStudent, List<Student> eightStudent, List<Student> fiveStudent, String filename) throws IOException, DocumentException {
+    public void generateFinalResult(List<Student> tenStudent, List<Student> eightStudent, List<Student> fiveStudent,
+                                    String filename) throws IOException, DocumentException {
 
         final float margin = 25;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
@@ -577,7 +593,7 @@ public class PdfGenerationService {
 
         PdfPTable tenTable = new PdfPTable(5);
         tenTable.setWidthPercentage(100);
-        tenTable.setWidths(new int[]{4, 6, 15, 15, 5});
+        tenTable.setWidths(new int[] {4, 6, 15, 15, 5});
 
         tenTable.addCell(new Phrase("Merit", boldFont));
         tenTable.addCell(new Phrase("Roll No.", boldFont));
@@ -601,7 +617,7 @@ public class PdfGenerationService {
 
         PdfPTable eightTable = new PdfPTable(5);
         eightTable.setWidthPercentage(100);
-        eightTable.setWidths(new int[]{4, 6, 15, 15, 5});
+        eightTable.setWidths(new int[] {4, 6, 15, 15, 5});
 
         eightTable.addCell(new Phrase("Merit", boldFont));
         eightTable.addCell(new Phrase("Roll No.", boldFont));
@@ -626,7 +642,7 @@ public class PdfGenerationService {
         PdfPTable fiveTable = new PdfPTable(5);
         fiveTable.setWidthPercentage(100);
         fiveParagraph.setAlignment(Element.ALIGN_CENTER);
-        fiveTable.setWidths(new int[]{4, 6, 15, 15, 5});
+        fiveTable.setWidths(new int[] {4, 6, 15, 15, 5});
 
         fiveTable.addCell(new Phrase("Merit", boldFont));
         fiveTable.addCell(new Phrase("Roll No.", boldFont));
@@ -663,7 +679,8 @@ public class PdfGenerationService {
         document.close();
     }
 
-    public void generateUnregisteredStudentList(UnregisteredStudents unregisteredStudents) throws IOException, DocumentException {
+    public void generateUnregisteredStudentList(UnregisteredStudents unregisteredStudents)
+        throws IOException, DocumentException {
 
         String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Unregistered_List.pdf";
         final float margin = 25;
@@ -700,10 +717,11 @@ public class PdfGenerationService {
         return headingParagraph;
     }
 
-    private PdfPTable generateUnregisteredTable(List<Student> studentList, Font boldFont, Font font) throws DocumentException {
+    private PdfPTable generateUnregisteredTable(List<Student> studentList, Font boldFont, Font font)
+        throws DocumentException {
         PdfPTable table = new PdfPTable(6);
         table.setWidthPercentage(100);
-        table.setWidths(new int[]{2, 15, 15, 5, 5, 5});
+        table.setWidths(new int[] {2, 15, 15, 5, 5, 5});
 
         table.addCell(new Phrase("Sl.", boldFont));
         table.addCell(new Phrase("Name", boldFont));

@@ -86,7 +86,7 @@ public class StudentService {
 
                 StudentDTO studentDTO = new StudentDTO();
                 studentDTO.setName(stringFormattingUtils.formatString(studentName));
-                studentDTO.setSchoolName(stringFormattingUtils.formatString(schoolName));
+                studentDTO.setSchoolName(schoolName);
                 studentDTO.setClassId(classId);
                 studentDTO.setClassIdActual(classIdActual);
                 studentDTO.setSchoolRollNo(schoolRollNo);
@@ -102,11 +102,6 @@ public class StudentService {
 
             List<StudentDTO> sortedStudent = sortStudent(femaleStudentDTOList);
             sortedStudent.addAll(sortStudent(maleStudentDTOList));
-
-//            int i = 1;
-//            for (StudentDTO s : sortedStudent) {
-//                System.out.println(i++ + " : " + s);
-//            }
 
             saveStudentToDatabase(sortedStudent);
 
@@ -202,7 +197,7 @@ public class StudentService {
 
         }
 
-        for (int j = 0; j < 30; j++) {
+        for (int j = 0; j < 20; j++) {
             Student student = new Student();
             Long rollNo = startingRollNo + i;
             Long regNo = (startingRegNo * 10000) + ((1 + random.nextInt(9)) * 1000) + increasingRegNo + i;
@@ -443,7 +438,7 @@ public class StudentService {
         int i = 0;
         for (Student student : studentList) {
             char ch = (char) ('A' + random.nextInt(26));
-            student.setVerificationNo(ch + "" + list.get(i++));
+            student.setVerificationNo(ch + String.valueOf(list.get(i++)));
         }
 
         studentRepository.saveAll(studentList);
