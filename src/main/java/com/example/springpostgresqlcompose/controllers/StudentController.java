@@ -2,6 +2,7 @@ package com.example.springpostgresqlcompose.controllers;
 
 import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.services.StudentService;
+import com.itextpdf.text.DocumentException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,12 +32,12 @@ public class StudentController {
         return studentService.addVerificationNo();
     }*/
 
-    @GetMapping("/admit-card/{classId}")
+    /*@GetMapping("/admit-card/{classId}")
     public String generateAdmitCard(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateAdmitCard(classId);
-    }
+    }*/
 
-    @GetMapping("/admit-card/blank/instant-register")
+    /*@GetMapping("/admit-card/blank/instant-register")
     public String generateBlankAdmitCard() throws Exception {
         return studentService.generateBlankAdmitCard();
     }
@@ -44,16 +45,21 @@ public class StudentController {
     @GetMapping("/list/pdf/unregistered")
     public String generateUnregisteredStudentList() throws Exception {
         return studentService.generateUnregisteredStudentList();
-    }
+    }*/
 
-    @GetMapping("/seat-plan-tokens/{classId}")
+    /*@GetMapping("/seat-plan-tokens/{classId}")
     public String generateSeatPlanTokens(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateSeatPlanTokens(classId);
+    }*/
+
+    @PostMapping("/seat-plan/room-distribution")
+    public String saveRoomDistribution(@RequestParam("file") final MultipartFile multipartFile) {
+        return studentService.saveRoomDistribution(multipartFile);
     }
 
-    @PostMapping("/attendance-sheet")
-    public String generateAttendanceSheet(@RequestParam("file") final MultipartFile multipartFile) {
-        return studentService.generateAttendanceSheet(multipartFile);
+    @GetMapping("/attendance-sheet")
+    public String generateAttendanceSheet() throws DocumentException, IOException {
+        return studentService.generateAttendanceSheet();
     }
 
     @PostMapping("/token-register/excel")

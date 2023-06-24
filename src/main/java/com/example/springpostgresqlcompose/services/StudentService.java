@@ -1,7 +1,9 @@
 package com.example.springpostgresqlcompose.services;
 
 import com.example.springpostgresqlcompose.constants.AppConstants;
+import com.example.springpostgresqlcompose.db.model.RoomDistribution;
 import com.example.springpostgresqlcompose.db.model.Student;
+import com.example.springpostgresqlcompose.db.repositories.RoomDistributionRepository;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
 import com.example.springpostgresqlcompose.dtos.ExcelData;
@@ -43,6 +45,7 @@ import java.util.Random;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final RoomDistributionRepository roomDistributionRepository;
     private final ExcelGenerationService excelGenerationService;
     private final StringFormattingUtils stringFormattingUtils;
     private final ClassOptionUtils classOptionUtils;
@@ -154,8 +157,9 @@ public class StudentService {
                 secondMaxSchoolStudent.setCount(secondMaxSchoolStudent.getCount() - 1);
 
                 queue.add(maxSchoolStudent);
-                if (secondMaxSchoolStudent.getCount() > 0)
+                if (secondMaxSchoolStudent.getCount() > 0) {
                     queue.add(secondMaxSchoolStudent);
+                }
             }
 
         }
@@ -164,8 +168,9 @@ public class StudentService {
     }
 
     public void saveStudentToDatabase(List<StudentDTO> studentDTOList) {
-        if (studentDTOList.isEmpty())
+        if (studentDTOList.isEmpty()) {
             return;
+        }
 
         StudentDTO firstStudent = studentDTOList.get(0);
 
@@ -213,7 +218,8 @@ public class StudentService {
     }
 
     public String generateAdmitCard(String classId) throws Exception {
-        List<Student> studentList = studentRepository.findByClassIdAndNameIsNotNullOrderBySchoolNameAscRollNoAsc(classId);
+        List<Student> studentList =
+            studentRepository.findByClassIdAndNameIsNotNullOrderBySchoolNameAscRollNoAsc(classId);
         Map<String, String> map = classOptionUtils.getOptionsOfClass(classId);
 
         String admitCardFileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + map.get("admitCards");
@@ -223,7 +229,8 @@ public class StudentService {
         Thread.sleep(2000);
 
         Image logoImage = Image.getInstance(AppConstants.AMAR_AMI_LOGO);
-        watermarkPdfGenerationService.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300, 0.1f);
+        watermarkPdfGenerationService.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300,
+            0.1f);
 
         return "Admit card generated successfully!";
     }
@@ -238,7 +245,8 @@ public class StudentService {
         Thread.sleep(2000);
 
         Image logoImage = Image.getInstance(AppConstants.AMAR_AMI_WHITE_LOGO);
-        watermarkPdfGenerationService.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300, 0.1f);
+        watermarkPdfGenerationService.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300,
+            0.1f);
 
         return "Admit card generated successfully!";
     }
@@ -253,9 +261,15 @@ public class StudentService {
     }
 
     public String generateFinalResult() throws Exception {
-        List<Student> tenStudent = studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Ten", AppConstants.TEN_PRIZE);
-        List<Student> eightStudent = studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Eight", AppConstants.EIGHT_PRIZE);
-        List<Student> fiveStudent = studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Five", AppConstants.FIVE_PRIZE);
+        List<Student> tenStudent =
+            studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Ten",
+                AppConstants.TEN_PRIZE);
+        List<Student> eightStudent =
+            studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Eight",
+                AppConstants.EIGHT_PRIZE);
+        List<Student> fiveStudent =
+            studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Five",
+                AppConstants.FIVE_PRIZE);
 
         String fileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Final_Result.pdf";
         pdfGenerationService.generateFinalResult(tenStudent, eightStudent, fiveStudent, fileName);
@@ -263,7 +277,7 @@ public class StudentService {
         return "Result generated successfully!";
     }
 
-    public String generateAttendanceSheet(MultipartFile multipartFile) {
+    public String saveRoomDistribution(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
             return "The File is empty!";
         }
@@ -276,13 +290,14 @@ public class StudentService {
             XSSFSheet spreadsheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = spreadsheet.iterator();
 
+            List<RoomDistribution> roomDistributions = new ArrayList<>();
+
             if (rowIterator.hasNext()) {
                 row = (XSSFRow) rowIterator.next();
                 if (row.getPhysicalNumberOfCells() != 5) {
                     return "Excel must have 5 columns!";
                 }
 
-                List<AttendanceSheetData> dataList = new ArrayList<>();
                 while (rowIterator.hasNext()) {
                     row = (XSSFRow) rowIterator.next();
 
@@ -292,13 +307,19 @@ public class StudentService {
                     long startRoll = excelGenerationService.getIntegerFromAllCellType(row.getCell(3)).longValue();
                     long endRoll = excelGenerationService.getIntegerFromAllCellType(row.getCell(4)).longValue();
 
-                    dataList.add(new AttendanceSheetData(classId, roomNo, centre, startRoll, endRoll));
+                    RoomDistribution roomDistribution = new RoomDistribution();
+                    roomDistribution.setClassId(classId);
+                    roomDistribution.setCentre(centre);
+                    roomDistribution.setRoomNumber(roomNo);
+                    roomDistribution.setStartRoll(startRoll);
+                    roomDistribution.setEndRoll(endRoll);
+
+                    roomDistributions.add(roomDistribution);
 
                 }
 
-                pdfGenerationService.generateAttendanceSheet(dataList);
-                pdfGenerationService.generateRoomDistribution(dataList);
-                return "Successfully generated attendance sheet!";
+                roomDistributionRepository.saveAll(roomDistributions);
+                return "Successfully saved room distributions!";
 
             }
 
@@ -307,6 +328,20 @@ public class StudentService {
             e.printStackTrace();
         }
         return "Ops! Could not generate attendance sheet!";
+    }
+
+    public String generateAttendanceSheet() throws DocumentException, IOException {
+        List<RoomDistribution> roomDistributions = roomDistributionRepository.findAll();
+        List<AttendanceSheetData> dataList = roomDistributions.stream().map(
+            rd -> new AttendanceSheetData(
+                rd.getClassId(), rd.getCentre(), rd.getRoomNumber(), rd.getStartRoll(), rd.getEndRoll()
+            )
+        ).toList();
+
+        pdfGenerationService.generateAttendanceSheet(dataList);
+        pdfGenerationService.generateRoomDistribution(dataList);
+        return "Successfully generated attendance sheet!";
+
     }
 
     public String registerByTokenAdmit(MultipartFile multipartFile) {
@@ -420,7 +455,8 @@ public class StudentService {
         List<Student> eightStudents = studentRepository.findByClassIdAndNameIsNullOrderByRollNo("Eight");
         List<Student> fiveStudents = studentRepository.findByClassIdAndNameIsNullOrderByRollNo("Five");
 
-        pdfGenerationService.generateUnregisteredStudentList(new UnregisteredStudents(tenStudents, eightStudents, fiveStudents));
+        pdfGenerationService.generateUnregisteredStudentList(
+            new UnregisteredStudents(tenStudents, eightStudents, fiveStudents));
 
         return "Unregistered student list generated successfully!";
     }
@@ -449,19 +485,21 @@ public class StudentService {
     public String generateExcelOfStudentList(String classId) throws IOException {
         List<Student> studentList = studentRepository.findByClassIdAndNameIsNotNullOrderByRollNo(classId);
 
-        String[] headers = new String[]{
-                "Id", "Name", "School Name", "Roll No.", "Reg No.", "Verify No"
+        String[] headers = new String[] {
+            "Id", "Name", "School Name", "Roll No.", "Reg No.", "Verify No"
         };
 
         List<Object[]> otherRowList = new ArrayList<>();
         for (Student student : studentList) {
-            Object[] otherRow = new Object[]{
-                    student.getId(), student.getName(), student.getSchoolName(), student.getRollNo(), student.getRegNo(), student.getVerificationNo()
+            Object[] otherRow = new Object[] {
+                student.getId(), student.getName(), student.getSchoolName(), student.getRollNo(), student.getRegNo(),
+                student.getVerificationNo()
             };
             otherRowList.add(otherRow);
         }
 
-        excelGenerationService.createExcelFile(new ExcelData("Test", headers, otherRowList), "Class_" + classId + "_Student_List.xlsx");
+        excelGenerationService.createExcelFile(new ExcelData("Test", headers, otherRowList),
+            "Class_" + classId + "_Student_List.xlsx");
 
         return "Excel Generated Successfully!";
     }
@@ -497,8 +535,9 @@ public class StudentService {
                     long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(0)).longValue();
                     double mark = excelGenerationService.getDoubleFromAllCellType(row.getCell(1));
 
-                    if (mark >= 0)
+                    if (mark >= 0) {
                         studentMap.get(rollNo).setMarks(mark);
+                    }
                 }
 
             }
@@ -514,7 +553,8 @@ public class StudentService {
     }
 
     public Page<Student> filterStudentBySearch(Map map, Pageable pageable) {
-        return studentRepository.filterBySearch(map.get("name"), map.get("schoolName"), map.get("schoolRollNo"), pageable);
+        return studentRepository.filterBySearch(map.get("name"), map.get("schoolName"), map.get("schoolRollNo"),
+            pageable);
     }
 
     public long countStudentBySearch(Map map) {
