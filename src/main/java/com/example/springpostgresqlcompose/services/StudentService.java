@@ -9,6 +9,7 @@ import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
 import com.example.springpostgresqlcompose.dtos.ExcelData;
 import com.example.springpostgresqlcompose.dtos.SchoolWiseStudent;
 import com.example.springpostgresqlcompose.dtos.StudentDTO;
+import com.example.springpostgresqlcompose.dtos.StudentRoomData;
 import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
 import com.example.springpostgresqlcompose.enums.Gender;
 import com.example.springpostgresqlcompose.utils.ClassOptionUtils;
@@ -631,5 +632,44 @@ public class StudentService {
         studentRepository.saveAll(fivesStudents);
 
         return "Successfully updated grade & merit position!";
+    }
+
+    public String getStudentWiseRoomDistribution(String classId, String schoolName)
+        throws DocumentException, IOException {
+        List<Student> studentList =
+            studentRepository.findStudentByClassIdAndSchoolNameOrderBySchoolRollNo(classId, schoolName);
+        List<RoomDistribution> roomDistributions = roomDistributionRepository.findByClassIdOrderByStartRoll(classId);
+
+        List<StudentRoomData> studentRoomData = new ArrayList<>();
+        for (Student student : studentList) {
+            getStudentRoomData(student, roomDistributions, studentRoomData);
+        }
+
+        pdfGenerationService.generateStudentWiseRoomDistribution(schoolName, studentRoomData);
+        return "Student-wise room distributions generated successfully!";
+    }
+
+    public void getStudentRoomData(Student student, List<RoomDistribution> roomDistributions,
+                                   List<StudentRoomData> studentRoomData) {
+        int l = 0;
+        int r = roomDistributions.size() - 1;
+
+        while (l <= r) {
+            int m = l + (r - l) / 2;
+            if (roomDistributions.get(m).getStartRoll() <= student.getRollNo()
+                && student.getRollNo() <= roomDistributions.get(m).getEndRoll()) {
+                studentRoomData.add(new StudentRoomData(
+                    student.getName(), student.getClassIdActual(), student.getSchoolRollNo(),
+                    roomDistributions.get(m).getCentre(), roomDistributions.get(m).getRoomNumber()
+                ));
+
+                return;
+            }
+            if (student.getRollNo() < roomDistributions.get(m).getStartRoll()) {
+                r = m - 1;
+            } else {
+                l = m + 1;
+            }
+        }
     }
 }

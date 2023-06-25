@@ -17,6 +17,8 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     List<Student> findAllByNameIsNotNull();
 
+    List<Student> findStudentByClassIdAndSchoolNameOrderBySchoolRollNo(String classId, String schoolName);
+
     List<Student> findAllByNameIsNull();
 
     List<Student> findAllByClassIdAndMarksIsNotNullOrderByMarksDesc(String classId);

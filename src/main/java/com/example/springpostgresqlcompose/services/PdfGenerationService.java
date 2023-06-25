@@ -5,6 +5,7 @@ import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
+import com.example.springpostgresqlcompose.dtos.StudentRoomData;
 import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -299,7 +300,7 @@ public class PdfGenerationService {
         for (Student student : studentList) {
 
             Paragraph paragraph = new Paragraph("Amar Ami\n", largeFont);
-            paragraph.add(new Chunk("Talent Evaluation Exam - 2022\n", largeFont));
+            paragraph.add(new Chunk("Talent Evaluation Exam - 2023\n", largeFont));
             paragraph.setAlignment(Element.ALIGN_CENTER);
             paragraph.setSpacingAfter(15);
 
@@ -521,7 +522,7 @@ public class PdfGenerationService {
 
         for (AttendanceSheetData data : dataList) {
 
-            Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2022\n", font);
+            Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2023\n", font);
             headingParagraph.add(new Chunk("Room No: " + data.getRoomNo() + "\n", font));
             headingParagraph.add(new Chunk(data.getCentre() + "\n", font));
             headingParagraph.add(new Chunk(
@@ -582,7 +583,7 @@ public class PdfGenerationService {
 
         document.open();
 
-        Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2022\n", font);
+        Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2023\n", font);
         headingParagraph.add(new Chunk("Result List", font));
         headingParagraph.setAlignment(Element.ALIGN_CENTER);
         headingParagraph.setSpacingAfter(10);
@@ -709,7 +710,7 @@ public class PdfGenerationService {
     }
 
     private Paragraph getUnregisteredHeadingParagraph(String classId, Font font) {
-        Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2022\n", font);
+        Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2023\n", font);
         headingParagraph.add(new Chunk("Class: " + classId, font));
         headingParagraph.setAlignment(Element.ALIGN_CENTER);
         headingParagraph.setSpacingAfter(20);
@@ -744,4 +745,49 @@ public class PdfGenerationService {
     }
 
 
+    public void generateStudentWiseRoomDistribution(String schoolName, List<StudentRoomData> studentRoomData)
+        throws DocumentException, IOException {
+
+        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Student_Room_Distribution.pdf";
+        final float margin = 25;
+        Document document = new Document(PageSize.A4, margin, margin, margin, margin);
+
+        Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD, BaseColor.BLACK);
+        Font font = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL, BaseColor.BLACK);
+
+        PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
+        document.open();
+
+        Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2023\n", font);
+        headingParagraph.add(new Chunk("Student-wise Seat Plan\n", font));
+        headingParagraph.add(new Chunk("School Name: " + schoolName, font));
+
+        headingParagraph.setAlignment(Element.ALIGN_CENTER);
+        headingParagraph.setSpacingAfter(20);
+
+        PdfPTable table = new PdfPTable(5);
+        table.setWidthPercentage(100);
+        table.setWidths(new int[] {2, 15, 6, 15, 4});
+
+        table.addCell(new Phrase("Sl.", boldFont));
+        table.addCell(new Phrase("Name", boldFont));
+        table.addCell(new Phrase("School Roll No.", boldFont));
+        table.addCell(new Phrase("Centre", boldFont));
+        table.addCell(new Phrase("Room No.", boldFont));
+
+        int i = 1;
+        for (StudentRoomData data : studentRoomData) {
+            table.addCell(new Phrase(i++ + ".", font));
+            table.addCell(new Phrase(data.getStudentName(), font));
+            table.addCell(new Phrase(String.valueOf(data.getSchoolRollNo()), font));
+            table.addCell(new Phrase(data.getCentre(), font));
+            table.addCell(new Phrase(data.getRoomNo(), font));
+        }
+
+
+        document.add(headingParagraph);
+        document.add(table);
+
+        document.close();
+    }
 }

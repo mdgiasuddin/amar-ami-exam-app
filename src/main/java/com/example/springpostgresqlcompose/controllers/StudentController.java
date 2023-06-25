@@ -57,6 +57,14 @@ public class StudentController {
         return studentService.saveRoomDistribution(multipartFile);
     }
 
+    @GetMapping("/seat-plan/student-wise-room-distribution")
+    public String getStudentWiseRoomDistribution(
+        @RequestParam("class_id") String classId,
+        @RequestParam("school_name") String schoolName
+    ) throws DocumentException, IOException {
+        return studentService.getStudentWiseRoomDistribution(classId, schoolName);
+    }
+
     @GetMapping("/attendance-sheet")
     public String generateAttendanceSheet() throws DocumentException, IOException {
         return studentService.generateAttendanceSheet();
