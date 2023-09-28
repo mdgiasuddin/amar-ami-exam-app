@@ -1,14 +1,18 @@
 package com.example.springpostgresqlcompose.controllers;
 
 import com.example.springpostgresqlcompose.dtos.AddressDetailsDTO;
+import com.example.springpostgresqlcompose.dtos.AddressView;
 import com.example.springpostgresqlcompose.services.AddressDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -26,4 +30,9 @@ public class AddressDetailsController {
 //    public List<StudentAddressDTO> getStudentByAddress(@RequestParam("address") String address) {
 //        return addressDetailsService.getStudentByAddress(address);
 //    }
+
+    @GetMapping("/student")
+    public List<AddressView> getAddressWithStudent() {
+        return addressDetailsService.getAddressWithStudent();
+    }
 }

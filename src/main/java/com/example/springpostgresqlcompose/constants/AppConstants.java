@@ -12,8 +12,8 @@ public class AppConstants {
     public static final String OLD_ENGLISH = STATIC_RESOURCES_DIRECTORY + "OLDENGL.TTF";
     public static final String WINDING = STATIC_RESOURCES_DIRECTORY + "wingding.ttf";
 
-    public static final int TEN_PRIZE = 15;
-    public static final int EIGHT_PRIZE = 10;
-    public static final int FIVE_PRIZE = 13;
+    public static final int TEN_PRIZE = 11;
+    public static final int EIGHT_PRIZE = 11;
+    public static final int FIVE_PRIZE = 12;
     public static final String EXAM_DATE = "Exam Date: Monday, 26 June, 9.00 am";
 }

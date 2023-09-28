@@ -12,6 +12,7 @@ public class StudentRoomData {
 
     private String studentName;
     private String classId;
+    private String schoolName;
     private Long schoolRollNo;
     private String centre;
     private String roomNo;

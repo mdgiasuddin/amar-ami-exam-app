@@ -5,11 +5,14 @@ import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.AddressDetailsRepository;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AddressDetailsDTO;
+import com.example.springpostgresqlcompose.dtos.AddressView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -33,6 +36,10 @@ public class AddressDetailsService {
         addressDetailsRepository.save(addressDetails);
 
         return "Address details saved successfully!";
+    }
+
+    public List<AddressView> getAddressWithStudent() {
+        return addressDetailsRepository.findAllByStudentIsNotNull();
     }
 
 //    public List<StudentAddressDTO> getStudentByAddress(String address) {

@@ -10,6 +10,7 @@ import com.example.springpostgresqlcompose.dtos.ExcelData;
 import com.example.springpostgresqlcompose.dtos.SchoolWiseStudent;
 import com.example.springpostgresqlcompose.dtos.StudentDTO;
 import com.example.springpostgresqlcompose.dtos.StudentRoomData;
+import com.example.springpostgresqlcompose.dtos.StudentView;
 import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
 import com.example.springpostgresqlcompose.enums.Gender;
 import com.example.springpostgresqlcompose.utils.ClassOptionUtils;
@@ -634,18 +635,26 @@ public class StudentService {
         return "Successfully updated grade & merit position!";
     }
 
-    public String getStudentWiseRoomDistribution(String classId, String schoolName)
+    public String getStudentWiseRoomDistribution(String classId)
         throws DocumentException, IOException {
-        List<Student> studentList =
-            studentRepository.findStudentByClassIdAndSchoolNameOrderBySchoolRollNo(classId, schoolName);
-        List<RoomDistribution> roomDistributions = roomDistributionRepository.findByClassIdOrderByStartRoll(classId);
+        List<String> schoolNames = studentRepository.getAllSchoolNames(classId);
+        System.out.println("School Names: " + schoolNames);
+        List<RoomDistribution> roomDistributions =
+            roomDistributionRepository.findByClassIdOrderByStartRoll(classId);
 
-        List<StudentRoomData> studentRoomData = new ArrayList<>();
-        for (Student student : studentList) {
-            getStudentRoomData(student, roomDistributions, studentRoomData);
+        List<List<StudentRoomData>> studentRoomDataList = new ArrayList<>();
+        for (String schoolName : schoolNames) {
+            List<Student> studentList =
+                studentRepository.findStudentByClassIdAndSchoolNameOrderBySchoolRollNo(classId, schoolName);
+
+            List<StudentRoomData> studentRoomData = new ArrayList<>();
+            for (Student student : studentList) {
+                getStudentRoomData(student, roomDistributions, studentRoomData);
+            }
+            studentRoomDataList.add(studentRoomData);
         }
 
-        pdfGenerationService.generateStudentWiseRoomDistribution(schoolName, studentRoomData);
+        pdfGenerationService.generateStudentWiseRoomDistribution(classId, studentRoomDataList);
         return "Student-wise room distributions generated successfully!";
     }
 
@@ -659,7 +668,7 @@ public class StudentService {
             if (roomDistributions.get(m).getStartRoll() <= student.getRollNo()
                 && student.getRollNo() <= roomDistributions.get(m).getEndRoll()) {
                 studentRoomData.add(new StudentRoomData(
-                    student.getName(), student.getClassIdActual(), student.getSchoolRollNo(),
+                    student.getName(), student.getClassIdActual(), student.getSchoolName(), student.getSchoolRollNo(),
                     roomDistributions.get(m).getCentre(), roomDistributions.get(m).getRoomNumber()
                 ));
 
@@ -671,5 +680,21 @@ public class StudentService {
                 l = m + 1;
             }
         }
+    }
+
+    public String getBlankListForRegistration() throws DocumentException, IOException {
+
+        List<Student> fiveList = studentRepository.findAllByClassIdAndNameIsNullOrderByRollNoAsc("Five");
+        List<Student> eightList = studentRepository.findAllByClassIdAndNameIsNullOrderByRollNoAsc("Eight");
+        List<Student> tenList = studentRepository.findAllByClassIdAndNameIsNullOrderByRollNoAsc("Ten");
+
+        pdfGenerationService.getBlankListForRegistration("Five", fiveList);
+        pdfGenerationService.getBlankListForRegistration("Eight", eightList);
+        pdfGenerationService.getBlankListForRegistration("Ten", tenList);
+        return "Blank List for registration created successfully!";
+    }
+
+    public List<StudentView> getStudentProjection() {
+        return studentRepository.findAllByClassId("Ten");
     }
 }

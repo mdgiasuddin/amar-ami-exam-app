@@ -573,7 +573,7 @@ public class PdfGenerationService {
     public void generateFinalResult(List<Student> tenStudent, List<Student> eightStudent, List<Student> fiveStudent,
                                     String filename) throws IOException, DocumentException {
 
-        final float margin = 25;
+        final float margin = 30;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
 
         Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD, BaseColor.BLACK);
@@ -594,7 +594,7 @@ public class PdfGenerationService {
 
         PdfPTable tenTable = new PdfPTable(5);
         tenTable.setWidthPercentage(100);
-        tenTable.setWidths(new int[] {4, 6, 15, 15, 5});
+        tenTable.setWidths(new int[] {4, 5, 13, 18, 5});
 
         tenTable.addCell(new Phrase("Merit", boldFont));
         tenTable.addCell(new Phrase("Roll No.", boldFont));
@@ -606,10 +606,10 @@ public class PdfGenerationService {
         for (Student student : tenStudent) {
 
             tenTable.addCell(new Phrase(student.getMeritPosition() + ".", font));
-            tenTable.addCell(new Phrase(student.getRollNo() + "", font));
+            tenTable.addCell(new Phrase(String.valueOf(student.getRollNo()), font));
             tenTable.addCell(new Phrase(student.getName(), font));
             tenTable.addCell(new Phrase(student.getSchoolName(), font));
-            tenTable.addCell(new Phrase(student.getMarks() + "", font));
+            tenTable.addCell(new Phrase(String.valueOf(student.getMarks()), font));
         }
 
         Paragraph eightParagraph = new Paragraph("Class - 8 (Eight)", boldFont);
@@ -618,7 +618,7 @@ public class PdfGenerationService {
 
         PdfPTable eightTable = new PdfPTable(5);
         eightTable.setWidthPercentage(100);
-        eightTable.setWidths(new int[] {4, 6, 15, 15, 5});
+        eightTable.setWidths(new int[] {4, 5, 13, 18, 5});
 
         eightTable.addCell(new Phrase("Merit", boldFont));
         eightTable.addCell(new Phrase("Roll No.", boldFont));
@@ -629,10 +629,10 @@ public class PdfGenerationService {
         for (Student student : eightStudent) {
 
             eightTable.addCell(new Phrase(student.getMeritPosition() + ".", font));
-            eightTable.addCell(new Phrase(student.getRollNo() + "", font));
+            eightTable.addCell(new Phrase(String.valueOf(student.getRollNo()), font));
             eightTable.addCell(new Phrase(student.getName(), font));
             eightTable.addCell(new Phrase(student.getSchoolName(), font));
-            eightTable.addCell(new Phrase(student.getMarks() + "", font));
+            eightTable.addCell(new Phrase(String.valueOf(student.getMarks()), font));
         }
 
         eightTable.setSpacingAfter(10);
@@ -643,7 +643,7 @@ public class PdfGenerationService {
         PdfPTable fiveTable = new PdfPTable(5);
         fiveTable.setWidthPercentage(100);
         fiveParagraph.setAlignment(Element.ALIGN_CENTER);
-        fiveTable.setWidths(new int[] {4, 6, 15, 15, 5});
+        fiveTable.setWidths(new int[] {4, 5, 13, 18, 5});
 
         fiveTable.addCell(new Phrase("Merit", boldFont));
         fiveTable.addCell(new Phrase("Roll No.", boldFont));
@@ -654,10 +654,10 @@ public class PdfGenerationService {
         for (Student student : fiveStudent) {
 
             fiveTable.addCell(new Phrase(student.getMeritPosition() + ".", font));
-            fiveTable.addCell(new Phrase(student.getRollNo() + "", font));
+            fiveTable.addCell(new Phrase(String.valueOf(student.getRollNo()), font));
             fiveTable.addCell(new Phrase(student.getName(), font));
             fiveTable.addCell(new Phrase(student.getSchoolName(), font));
-            fiveTable.addCell(new Phrase(student.getMarks() + "", font));
+            fiveTable.addCell(new Phrase(String.valueOf(student.getMarks()), font));
         }
 
         fiveTable.setSpacingAfter(60);
@@ -745,10 +745,63 @@ public class PdfGenerationService {
     }
 
 
-    public void generateStudentWiseRoomDistribution(String schoolName, List<StudentRoomData> studentRoomData)
+    public void generateStudentWiseRoomDistribution(String classId,
+                                                    List<List<StudentRoomData>> studentRoomDataList)
         throws DocumentException, IOException {
 
-        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Student_Room_Distribution.pdf";
+        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + classId + "_student_room.pdf";
+        final float margin = 25;
+        Document document = new Document(PageSize.A4, margin, margin, margin, margin);
+
+        Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD, BaseColor.BLACK);
+        Font font = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL, BaseColor.BLACK);
+
+        PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
+        document.open();
+
+        for (List<StudentRoomData> studentRoomData : studentRoomDataList) {
+            Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2023\n", font);
+            headingParagraph.add(new Chunk("Student-wise Seat Plan\n", font));
+            headingParagraph.add(new Chunk("School Name: " + studentRoomData.get(0).getSchoolName(), font));
+
+            headingParagraph.setAlignment(Element.ALIGN_CENTER);
+            headingParagraph.setSpacingAfter(20);
+
+            PdfPTable table = new PdfPTable(6);
+            table.setWidthPercentage(100);
+            table.setWidths(new int[] {2, 13, 4, 6, 17, 4});
+
+            table.addCell(new Phrase("Sl.", boldFont));
+            table.addCell(new Phrase("Name", boldFont));
+            table.addCell(new Phrase("Class", boldFont));
+            table.addCell(new Phrase("School Roll No.", boldFont));
+            table.addCell(new Phrase("Centre", boldFont));
+            table.addCell(new Phrase("Room No.", boldFont));
+
+            int i = 1;
+            for (StudentRoomData data : studentRoomData) {
+                table.addCell(new Phrase(i++ + ".", font));
+                table.addCell(new Phrase(data.getStudentName(), font));
+                table.addCell(new Phrase(classId, font));
+                table.addCell(new Phrase(String.valueOf(data.getSchoolRollNo()), font));
+                table.addCell(new Phrase(data.getCentre(), font));
+                table.addCell(new Phrase(data.getRoomNo(), font));
+            }
+
+
+            document.add(headingParagraph);
+            document.add(table);
+
+            document.newPage();
+        }
+
+        document.close();
+    }
+
+    public void getBlankListForRegistration(String classId, List<Student> studentList)
+        throws DocumentException, IOException {
+
+        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + classId + "_blank_register.pdf";
         final float margin = 25;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
 
@@ -759,29 +812,32 @@ public class PdfGenerationService {
         document.open();
 
         Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2023\n", font);
-        headingParagraph.add(new Chunk("Student-wise Seat Plan\n", font));
-        headingParagraph.add(new Chunk("School Name: " + schoolName, font));
+        headingParagraph.add(new Chunk("Class: " + classId + "\n", font));
 
         headingParagraph.setAlignment(Element.ALIGN_CENTER);
         headingParagraph.setSpacingAfter(20);
 
-        PdfPTable table = new PdfPTable(5);
+        PdfPTable table = new PdfPTable(7);
         table.setWidthPercentage(100);
-        table.setWidths(new int[] {2, 15, 6, 15, 4});
+        table.setWidths(new int[] {2, 15, 15, 6, 6, 6, 6});
 
         table.addCell(new Phrase("Sl.", boldFont));
         table.addCell(new Phrase("Name", boldFont));
+        table.addCell(new Phrase("School Name", boldFont));
         table.addCell(new Phrase("School Roll No.", boldFont));
-        table.addCell(new Phrase("Centre", boldFont));
-        table.addCell(new Phrase("Room No.", boldFont));
+        table.addCell(new Phrase("Roll No.", boldFont));
+        table.addCell(new Phrase("Reg No.", boldFont));
+        table.addCell(new Phrase("Verify No.", boldFont));
 
         int i = 1;
-        for (StudentRoomData data : studentRoomData) {
+        for (Student student : studentList) {
             table.addCell(new Phrase(i++ + ".", font));
-            table.addCell(new Phrase(data.getStudentName(), font));
-            table.addCell(new Phrase(String.valueOf(data.getSchoolRollNo()), font));
-            table.addCell(new Phrase(data.getCentre(), font));
-            table.addCell(new Phrase(data.getRoomNo(), font));
+            table.addCell(new Phrase("", font));
+            table.addCell(new Phrase("", font));
+            table.addCell(new Phrase("", font));
+            table.addCell(new Phrase(String.valueOf(student.getRollNo()), font));
+            table.addCell(new Phrase(String.valueOf(student.getRegNo()), font));
+            table.addCell(new Phrase(student.getVerificationNo(), font));
         }
 
 
