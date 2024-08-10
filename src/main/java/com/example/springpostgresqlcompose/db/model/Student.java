@@ -62,6 +62,6 @@ public class Student {
     @Column(name = "merit_position")
     private Integer meritPosition;
 
-//    @OneToOne(fetch = FetchType.LAZY, mappedBy = "student")
-//    private AddressDetails addressDetails;
+    @Column(name = "profile_image")
+    private String profileImage;
 }

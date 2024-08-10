@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 
+import static com.example.springpostgresqlcompose.constants.AppConstants.INPUT_OUTPUT_FILE_DIRECTORY;
+
 @Service
 @Slf4j
 @Transactional
@@ -224,8 +226,8 @@ public class StudentService {
             studentRepository.findByClassIdAndNameIsNotNullOrderBySchoolNameAscRollNoAsc(classId);
         Map<String, String> map = classOptionUtils.getOptionsOfClass(classId);
 
-        String admitCardFileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + map.get("admitCards");
-        String watermarkAdmitCard = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + map.get("watermarkAdmitCards");
+        String admitCardFileName = INPUT_OUTPUT_FILE_DIRECTORY + map.get("admitCards");
+        String watermarkAdmitCard = INPUT_OUTPUT_FILE_DIRECTORY + map.get("watermarkAdmitCards");
         pdfGenerationService.generateAdmitCard(studentList, admitCardFileName);
 
         Thread.sleep(2000);
@@ -240,8 +242,8 @@ public class StudentService {
     public String generateBlankAdmitCard() throws Exception {
         List<Student> studentList = studentRepository.findAllByNameIsNullOrderByClassIdAscRollNoAsc();
 
-        String admitCardFileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "BlankAdmitCards.pdf";
-        String watermarkAdmitCard = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "WaterMarkedBlankAdmitCards.pdf";
+        String admitCardFileName = INPUT_OUTPUT_FILE_DIRECTORY + "BlankAdmitCards.pdf";
+        String watermarkAdmitCard = INPUT_OUTPUT_FILE_DIRECTORY + "WaterMarkedBlankAdmitCards.pdf";
         pdfGenerationService.generateBlankAdmitCard(studentList, admitCardFileName);
 
         Thread.sleep(2000);
@@ -256,7 +258,7 @@ public class StudentService {
     public String generateSeatPlanTokens(String classId) throws Exception {
         List<Student> studentList = studentRepository.findByClassIdAndNameIsNotNullOrderByRollNo(classId);
 
-        String fileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + classId + "_Seat_Plan.pdf";
+        String fileName = INPUT_OUTPUT_FILE_DIRECTORY + classId + "_Seat_Plan.pdf";
         pdfGenerationService.generateSeatPlan(studentList, fileName);
 
         return "Seat plan generated successfully!";
@@ -273,7 +275,7 @@ public class StudentService {
             studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Five",
                 AppConstants.FIVE_PRIZE);
 
-        String fileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Final_Result.pdf";
+        String fileName = INPUT_OUTPUT_FILE_DIRECTORY + "Final_Result.pdf";
         pdfGenerationService.generateFinalResult(tenStudent, eightStudent, fiveStudent, fileName);
 
         return "Result generated successfully!";

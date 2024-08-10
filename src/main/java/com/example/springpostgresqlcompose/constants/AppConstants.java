@@ -1,8 +1,14 @@
 package com.example.springpostgresqlcompose.constants;
 
+import lombok.NoArgsConstructor;
+
+import static lombok.AccessLevel.PRIVATE;
+
+@NoArgsConstructor(access = PRIVATE)
 public class AppConstants {
 
     public static final String INPUT_OUTPUT_FILE_DIRECTORY = "src/main/resources/files/admit_cards/";
+    public static final String PROFILE_IMAGE_DIRECTORY = "src/main/resources/files/profile_images/";
     public static final String STATIC_RESOURCES_DIRECTORY = "src/main/resources/files/static_files/";
     public static final String AMAR_AMI_LOGO = STATIC_RESOURCES_DIRECTORY + "amar_ami.png";
 

@@ -1,7 +1,6 @@
 package com.example.springpostgresqlcompose.services;
 
 
-import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
@@ -35,15 +34,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.springpostgresqlcompose.constants.AppConstants.EXAM_DATE;
+import static com.example.springpostgresqlcompose.constants.AppConstants.*;
 
 @Service
 @Slf4j
@@ -58,14 +55,13 @@ public class PdfGenerationService {
 
         Rectangle pageSize = new Rectangle(594, 426);
         pageSize.setBackgroundColor(new BaseColor(192, 192, 192));
-        final float marginTopBottom = 25;
+        final float marginTopBottom = 20;
         final float marginLeftRight = 35;
         Document document = new Document(pageSize, marginLeftRight, marginLeftRight, marginTopBottom, marginTopBottom);
 
-        BaseFont scriptMTBold =
-            BaseFont.createFont(AppConstants.SCRIPT_MT_BOLD, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        BaseFont oldEnglish = BaseFont.createFont(AppConstants.OLD_ENGLISH, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        BaseFont winding = BaseFont.createFont(AppConstants.WINDING, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont scriptMTBold = BaseFont.createFont(SCRIPT_MT_BOLD, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont oldEnglish = BaseFont.createFont(OLD_ENGLISH, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont winding = BaseFont.createFont(WINDING, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
         Font fontItalic = new Font(Font.FontFamily.TIMES_ROMAN, 10f, Font.ITALIC, BaseColor.BLACK);
         Font fontNormal = new Font(Font.FontFamily.TIMES_ROMAN, 8f, Font.NORMAL, BaseColor.BLACK);
@@ -81,34 +77,40 @@ public class PdfGenerationService {
 
         document.open();
 
-        Image logoImage = Image.getInstance(AppConstants.AMAR_AMI_LOGO);
-        Image signImage = Image.getInstance(AppConstants.SIGNATURE_IMAGE);
+        Image logoImage = Image.getInstance(AMAR_AMI_LOGO);
+        Image signImage = Image.getInstance(SIGNATURE_IMAGE);
 
         for (Student student : studentList) {
+            PdfPTable headerTable = new PdfPTable(3);
+            headerTable.setWidthPercentage(100);
+            headerTable.setWidths(new int[]{1, 4, 1});
 
             logoImage.setAlignment(Element.ALIGN_LEFT);
             logoImage.setBorderWidth(SPACING);
-
-            PdfPTable imageTable = new PdfPTable(2);
-            imageTable.setWidthPercentage(100);
-            imageTable.setWidths(new int[] {1, 5});
-
-            PdfPCell imageCell = new PdfPCell();
-            imageCell.addElement(logoImage);
-            imageCell.setBorder(Rectangle.NO_BORDER);
-            imageTable.addCell(imageCell);
+            PdfPCell logoImageCell = new PdfPCell();
+            logoImageCell.addElement(logoImage);
+            logoImageCell.setBorder(Rectangle.NO_BORDER);
 
             Font font2 = new Font(oldEnglish, 12, Font.NORMAL, BaseColor.BLACK);
             PdfPCell textCell = new PdfPCell();
-
             Paragraph paragraph = new Paragraph("Amar Ami\n", oldEnglish22);
             paragraph.add(new Chunk("Talent Evaluation Exam - " + LocalDate.now().getYear() + "\n", font2));
             paragraph.setAlignment(Element.ALIGN_CENTER);
             textCell.addElement(paragraph);
             textCell.setBorder(Rectangle.NO_BORDER);
 
-            imageTable.addCell(textCell);
-            imageTable.setSpacingAfter(0);
+            Image profileImage = Image.getInstance(PROFILE_IMAGE_DIRECTORY + student.getProfileImage());
+            profileImage.scaleAbsolute(70, 70);
+            profileImage.setAlignment(Element.ALIGN_RIGHT);
+            profileImage.setBorderWidth(SPACING);
+            PdfPCell profileImageCell = new PdfPCell();
+            profileImageCell.addElement(profileImage);
+            profileImageCell.setBorder(Rectangle.NO_BORDER);
+
+            headerTable.addCell(logoImageCell);
+            headerTable.addCell(textCell);
+            headerTable.addCell(profileImageCell);
+            headerTable.setSpacingAfter(0);
 
             Paragraph paragraph1 = new Paragraph("Admit Card", oldEnglishIT18);
             paragraph1.setSpacingAfter(20);
@@ -116,13 +118,14 @@ public class PdfGenerationService {
 
             // Rectangle around 'Admit card'.
             PdfContentByte cb = writer.getDirectContent();
-            cb.roundRectangle(250f, 288f, 95f, 20f, 5f);
+            cb.roundRectangle(250f, 293f, 95f, 20f, 5f);
             cb.setColorStroke(new BaseColor(209, 0, 0));
             cb.stroke();
 
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(95);
             table.setWidths(new int[] {8, 5});
+            table.setSpacingAfter(25);
 
             PdfPCell cell;
 
@@ -198,9 +201,11 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
 //            table3.addCell(cell);
 
-            cell = new PdfPCell(new Phrase(
+            /*cell = new PdfPCell(new Phrase(
                 "Generated at: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM, yyyy hh:mm:ss a")),
-                fontNormal));
+                fontNormal));*/
+
+            cell = new PdfPCell(new Phrase("", fontNormal));
             cell.setBorder(Rectangle.NO_BORDER);
             table3.addCell(cell);
 
@@ -212,13 +217,14 @@ public class PdfGenerationService {
             table3.addCell(cell);
 
             // Line before directions.
-            cb.rectangle(35f, 125f, 524f, 0.3f);
+            cb.rectangle(35f, 105f, 524f, 0.3f);
             cb.setColorStroke(new BaseColor(0, 0, 0));
             cb.stroke();
 
             PdfPTable directions = new PdfPTable(2);
             directions.setWidthPercentage(100);
             directions.setWidths(new int[] {3, 97});
+            directions.setSpacingBefore(25);
 
             char checked = '\u0076';
             PdfPCell markCell = new PdfPCell(new Phrase(String.valueOf(checked), windingFont));
@@ -256,17 +262,16 @@ public class PdfGenerationService {
 
             // QR Code in top right corner.
             BarcodeQRCode qrCode = new BarcodeQRCode(
-                LocalDate.now().getYear() + ">>" + student.getRollNo() + ">>" + student.getName() + "<<"
-                    + "<<" + student.getRegNo() + "<<" + student.getVerificationNo(), 1, 1, null);
+                    student.getName() + "|" + student.getRollNo() + "|" + student.getRegNo() + "|" + student.getVerificationNo(), 1, 1, null);
             Image qrImage = qrCode.getImage();
             Image mask = qrCode.getImage();
             mask.makeMask();
             qrImage.setImageMask(mask);
-            qrImage.setAbsolutePosition(480, 315);
+            qrImage.setAbsolutePosition(35, 110);
             qrImage.scaleAbsolute(new Rectangle(90, 90));
-
             document.add(qrImage);
-            document.add(imageTable);
+
+            document.add(headerTable);
             document.add(paragraph1);
             document.add(table);
             document.add(table2);
@@ -295,7 +300,7 @@ public class PdfGenerationService {
 
         document.open();
 
-        Image signImage = Image.getInstance(AppConstants.SIGNATURE_IMAGE);
+        Image signImage = Image.getInstance(SIGNATURE_IMAGE);
 
         for (Student student : studentList) {
 
@@ -437,7 +442,7 @@ public class PdfGenerationService {
 
     public void generateRoomDistribution(List<AttendanceSheetData> dataList) throws IOException, DocumentException {
 
-        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Room_Distribution.pdf";
+        String filename = INPUT_OUTPUT_FILE_DIRECTORY + "Room_Distribution.pdf";
         final float margin = 30;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
 
@@ -509,7 +514,7 @@ public class PdfGenerationService {
 
     public void generateAttendanceSheet(List<AttendanceSheetData> dataList) throws IOException, DocumentException {
 
-        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Attendance_Sheet.pdf";
+        String filename = INPUT_OUTPUT_FILE_DIRECTORY + "Attendance_Sheet.pdf";
         final float margin = 25;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
 
@@ -683,7 +688,7 @@ public class PdfGenerationService {
     public void generateUnregisteredStudentList(UnregisteredStudents unregisteredStudents)
         throws IOException, DocumentException {
 
-        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Unregistered_List.pdf";
+        String filename = INPUT_OUTPUT_FILE_DIRECTORY + "Unregistered_List.pdf";
         final float margin = 25;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
 
@@ -749,7 +754,7 @@ public class PdfGenerationService {
                                                     List<List<StudentRoomData>> studentRoomDataList)
         throws DocumentException, IOException {
 
-        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + classId + "_student_room.pdf";
+        String filename = INPUT_OUTPUT_FILE_DIRECTORY + classId + "_student_room.pdf";
         final float margin = 25;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
 
@@ -801,7 +806,7 @@ public class PdfGenerationService {
     public void getBlankListForRegistration(String classId, List<Student> studentList)
         throws DocumentException, IOException {
 
-        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + classId + "_blank_register.pdf";
+        String filename = INPUT_OUTPUT_FILE_DIRECTORY + classId + "_blank_register.pdf";
         final float margin = 25;
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);
 

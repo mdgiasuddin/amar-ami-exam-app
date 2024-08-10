@@ -5,7 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### App Working Directory ###
 src/main/resources/files/admit_cards
+src/main/resources/files/profile_images
 
 ### STS ###
 .apt_generated
