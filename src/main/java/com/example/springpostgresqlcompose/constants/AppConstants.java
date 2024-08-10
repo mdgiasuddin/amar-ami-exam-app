@@ -2,8 +2,8 @@ package com.example.springpostgresqlcompose.constants;
 
 public class AppConstants {
 
-    public static final String INPUT_OUTPUT_FILE_DIRECTORY = "/home/gias/amar_ami/";
-    public static final String STATIC_RESOURCES_DIRECTORY = "src/main/resources/files/";
+    public static final String INPUT_OUTPUT_FILE_DIRECTORY = "src/main/resources/files/admit_cards/";
+    public static final String STATIC_RESOURCES_DIRECTORY = "src/main/resources/files/static_files/";
     public static final String AMAR_AMI_LOGO = STATIC_RESOURCES_DIRECTORY + "amar_ami.png";
 
     public static final String AMAR_AMI_WHITE_LOGO = STATIC_RESOURCES_DIRECTORY + "amar_ami_white.png";

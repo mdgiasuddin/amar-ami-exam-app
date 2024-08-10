@@ -30,20 +30,23 @@ public class StudentController {
 
     private final StudentService studentService;
 
-    /*@PostMapping("/excel")
-    public String saveStudent(@RequestParam("file") final MultipartFile multipartFile) throws IOException {
-        return studentService.saveStudent(multipartFile);
-    }*/
+    @PostMapping("/excel")
+    public String saveStudent(
+            @RequestParam("file") final MultipartFile multipartFile
+    ) throws IOException {
 
-    /*@PutMapping("/verification-no")
+        return studentService.saveStudent(multipartFile);
+    }
+
+    @PutMapping("/verification-no")
     public String addVerificationNo() {
         return studentService.addVerificationNo();
-    }*/
+    }
 
-    /*@GetMapping("/admit-card/{classId}")
+    @GetMapping("/admit-card/{classId}")
     public String generateAdmitCard(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateAdmitCard(classId);
-    }*/
+    }
 
     /*@GetMapping("/admit-card/blank/instant-register")
     public String generateBlankAdmitCard() throws Exception {
